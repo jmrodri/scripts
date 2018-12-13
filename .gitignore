@@ -1,0 +1,6 @@
+osb-configmap.yaml
+osb-catalogsource.yaml
+asb-subscription.yaml
+tsb-subscription.yaml
+asb-cr.yaml
+tsb-cr.yaml
