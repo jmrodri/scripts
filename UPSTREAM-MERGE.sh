@@ -91,7 +91,7 @@ git add UPSTREAM-VERSION
 git diff --staged --quiet && { echo "No changed files in merge?! Aborting."; exit 1; }
 
 # make local commit
-git commit -m "Merge upstream tag $version" -m "Merge executed via ./UPSTREAM-MERGE.sh $version $upstream_remote $rebase_branch" -m "$(printf "Overwritten conflicts:\\n%s" "$unmerged_files")"
+git commit -m "Merge upstream tag $version" -m "Operator SDK $version" -m "Merge executed via ./UPSTREAM-MERGE.sh $version $upstream_remote $rebase_branch" -m "$(printf "Overwritten conflicts:\\n%s" "$unmerged_files")"
 
 # verify merge is correct
 git --no-pager log --oneline "$(git merge-base origin/"$rebase_branch" tags/"$version")"..tags/"$version"
