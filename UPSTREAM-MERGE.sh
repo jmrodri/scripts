@@ -100,8 +100,9 @@ printf "\\n** Upstream merge complete! **\\n"
 echo "View the above incoming commits to verify all is well"
 echo "(mirrors the commit listing the PR will show)"
 echo ""
-echo "Now make a pull request, after it's LGTMed make the tag:"
-echo "$ git checkout $rebase_branch
-$ git pull
-$ git tag <origin version>-$version
-$ git push origin <origin version>-$version"
+echo "Now make a pull request."
+#echo "Now make a pull request, after it's LGTMed make the tag:"
+#echo "$ git checkout $rebase_branch
+#$ git pull
+#$ git tag <origin version>-$version
+##$ git push origin <origin version>-$version"
