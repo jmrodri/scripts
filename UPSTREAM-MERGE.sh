@@ -54,34 +54,64 @@ git merge --no-commit tags/"$version"
 # # get rid of upstream OWNERS, but leave the top level one alone
 # find . -mindepth 2 -name OWNERS -exec git rm -f '{}' +
 
-# update vendor
-go mod vendor
-git add vendor
-
 # preserve our version of these files
 git checkout HEAD -- OWNERS Makefile .gitignore
 
 # unmerged files are overwritten with the upstream copy
 unmerged_files=$(git diff --name-only --diff-filter=U --exit-code)
 differences=$?
+
 if [[ $differences -eq 1 ]]; then
   unmerged_files_oneline=$(echo "$unmerged_files" | paste -s -d ' ')
-  git checkout --theirs -- $unmerged_files_oneline
+  unmerged=$(git status --porcelain $unmerged_files_oneline | sed 's/ /,/')
+
+  # both deleted => remove => DD
+  # added by us => remove => AU
+  # deleted by them => remove  => UD
+  # deleted by us => remove => DU
+  # added by them => add => UA
+  # both added => take theirs => AA
+  # both modified => take theirs => UU
+  for line in $unmerged
+  do
+      IFS=","
+      set $line
+      case $1 in
+          "DD" | "AU" | "UD" | "DU")
+          git rm -- $2
+          ;;
+          "UA")
+          git add -- $2
+          ;;
+          "AA" | "UU")
+          git checkout --theirs -- $2
+          git add -- $2
+          ;;
+      esac
+  done
+
   if [[ $(git diff --check) ]]; then
     echo "All conflict markers should have been taken care of, aborting."
     exit 1
   fi
-  git add -- $unmerged_files_oneline
+
 else
   unmerged_files="<NONE>"
 fi
 
-# update upstream Makefile changes, but don't overwrite build patch
-# script executor must manually decline the build patch change, the diff may
-#  contain other changes that need accepting
-git show tags/"$version":Makefile > Makefile.sc
-git add --patch --interactive Makefile.sc
-git checkout Makefile.sc
+# update vendor
+go mod vendor
+# capture $? of go mod vendor, if it fails skip the add
+git add vendor
+
+
+# TODO (zeus): Service Catalog put the upstream Makefile into Makefile.sc
+# # update upstream Makefile changes, but don't overwrite build patch
+# # script executor must manually decline the build patch change, the diff may
+# #  contain other changes that need accepting
+# git show tags/"$version":Makefile > Makefile.sc
+# git add --patch --interactive Makefile.sc
+# git checkout Makefile.sc
 
 # bump UPSTREAM-VERSION file
 echo "$version" > UPSTREAM-VERSION
