@@ -51,9 +51,6 @@ git checkout -b "$version"-rebase-"$rebase_branch" || { echo "Expected branch $v
 # do the merge, but don't commit so tweaks below are included in commit
 git merge --no-commit tags/"$version"
 
-# # get rid of upstream OWNERS, but leave the top level one alone
-# find . -mindepth 2 -name OWNERS -exec git rm -f '{}' +
-
 # preserve our version of these files
 git checkout HEAD -- OWNERS Makefile .gitignore
 
