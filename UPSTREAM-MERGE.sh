@@ -53,7 +53,7 @@ git merge --no-commit tags/"$version"
 
 # preserve our version of these files
 # git checkout HEAD -- OWNERS Makefile .gitignore
-git checkout HEAD -- OWNERS
+git checkout HEAD -- OWNERS_ALIASES
 
 # unmerged files are overwritten with the upstream copy
 unmerged_files=$(git diff --name-only --diff-filter=U --exit-code)
